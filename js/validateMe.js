@@ -3,15 +3,17 @@
 //saike@saike.ru
 //kishkoglot@gmail.com
 
-Array.prototype.contains = function(obj) {
-    var i = this.length;
-    while (i--) {
-        if (this[i] === obj) {
-            return true;
-        }
+
+if(window.validateMe == undefined || window.validateMe == null || window.validateMe == {} || window.validateMe == ''){
+
+    var validateMe = {
+
+        setDefaultMessage: true,
+        messageOnStart: true
+
     }
-    return false;
-};
+}
+
 function IsNumeric(value){
     var RE = /^-{0,1}\d*\.{0,1}\d+$/;
     return (RE.test(value));
@@ -23,21 +25,95 @@ function checkURL(value) {
     }
     return (false);
 }
+
+function removeMessageClasses(desk){
+
+    $(desk).removeClass('validateMeError').removeClass('validateMeSuccess');
+
+}
+
 var inputs_to_validate = $("[validate]");
 inputs_to_validate.each(function(){
 
-    $(this).attr('onkeyup', 'validateMe(this)');
+    $(this).attr('onkeyup', 'validateMePlease(this)');
+    var target = '#' + $(this).attr('messageTo');
+    console.log($(target).text());
+    if(validateMe.setDefaultMessage == false){
+
+        $(target).attr('defaultMessage', $(target).text());
+
+    }
 
 });
-function validateMe(input){
+
+function innerMessageSender(input){
+
+    var valID = '#' + $(input).attr('messageTo');
+    var message = $(valID).attr('defaultMessage');
+    $(valID).text(message);
+}
+function startMessageSender(input){
+
+    var message = '';
+
+    var validates = $(input).attr('validate').split(' ');
+
+    var valID = '#' + $(input).attr('messageTo');
+    $(validates).each(function(){
+
+        if(this.indexOf('number') >= 0){
+
+            message = message + 'Only numbers! ';
+
+        }
+        if(this.indexOf('required') >= 0){
+
+            message = message + 'Required! ';
+
+        }
+        if(this.indexOf('minChars') >= 0){
+            var minValue = this.substring(9);
+            message = message + 'Minimum ' + minValue + ' characters! ';
+
+        }
+        if(this.indexOf('maxChars') >= 0){
+            var minValue = this.substring(9);
+            message = message + 'Maximum ' + minValue + ' characters! ';
+
+        }
+        if(this.indexOf('url') >= 0){
+
+            message = message + 'Invalid URL! ';
+
+        }
+    });
+
+    $(valID).html(message);
+
+}
+if(validateMe.messageOnStart == undefined || validateMe.messageOnStart == true){
+
+    if(validateMe.setDefaultMessage == undefined || validateMe.setDefaultMessage == true){
+
+        inputs_to_validate.each(function(){
+
+            startMessageSender(this);
+
+        });
+
+    }
+
+}
+function validateMePlease(input){
     var target = '#' + $(input).attr('messageTo');
     var validates = $(input).attr('validate').split(' ');
     console.log(validates);
     var testValue = $(input).val();
     var message = '';
+    removeMessageClasses($(target));
     $(validates).each(function(){
 
-        if(this.contains('number')){
+        if(this.indexOf('number') >= 0){
 
             if(IsNumeric(testValue) || testValue == null || testValue == ''){
 
@@ -51,7 +127,7 @@ function validateMe(input){
             }
 
         }
-        if(this.contains('required')){
+        if(this.indexOf('required') >=0){
 
             if(testValue != null && testValue != ''){
 
@@ -65,7 +141,7 @@ function validateMe(input){
             }
 
         }
-        if(this.contains('minChars')){
+        if(this.indexOf('minChars') >= 0){
 
             minValue = this.substring(9);
             console.log('new value = ' + minValue);
@@ -82,7 +158,7 @@ function validateMe(input){
 
         }
 
-        if(this.contains('maxChars')){
+        if(this.indexOf('maxChars') >= 0){
 
             maxValue = this.substring(9);
             if(testValue.length <= maxValue){
@@ -98,7 +174,7 @@ function validateMe(input){
 
         }
 
-        if(this.contains('url')){
+        if(this.indexOf('url') >= 0){
 
             if(checkURL(testValue)){
 
@@ -115,23 +191,37 @@ function validateMe(input){
         }
 
     });
-    if($(input).attr('validate').contains('required') == false && testValue == ''){
+    if( testValue == ''){
+        if(validateMe.setDefaultMessage == undefined || validateMe.setDefaultMessage == true){
 
-        $(target).html('');
+            startMessageSender(input);
 
+        }
+        else if(validateMe.setDefaultMessage == false){
+
+            innerMessageSender(input);
+
+        }
+        else {
+
+            $(target).html('');
+
+        }
     }
     else if(validates.length == 0){
 
         console.log('ok!!!');
 
-        $(target).html("It's OK!").css('color', 'green');
+            $(target).html("It's OK!").addClass('validateMeSuccess');
 
     }
 
     else {
 
+        $(target).html(message).addClass('validateMeError');
+
         console.log(message);
-        $(target).html(message).css('color', 'red');
+
 
     }
 }

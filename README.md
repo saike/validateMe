@@ -1,4 +1,6 @@
 validateMe
 ==========
 
-Crunchy and Crispy javascript input validator
+Crunchy and Crispy javascript input validator.
+
+

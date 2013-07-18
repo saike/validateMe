@@ -2,12 +2,13 @@
 <html>
 <head>
     <title>Validate Me</title>
+    <link rel="stylesheet" type="text/css" href="css/validateMe.css">
 </head>
 <body style="text-align: center; padding-top: 100px;">
 <div class="container">
 
-    <input type="text" validate="minChars_4 number required" messageTo="number" /><div id="number"></div><br>
-    <input type="text" validate="required" messageTo="required"/><div id="required"></div> <br>
+    <input type="text" validate="minChars_4 number required" messageTo="number" /><div id="number">Type your number here (required)</div><br>
+    <input type="text" validate="required" messageTo="required"/><div id="required">This is required input</div> <br>
     <input type="text" validate="minChars_10" messageTo="minChars"/><div id="minChars"></div> <br>
     <input type="text" validate="maxChars_5" messageTo="maxChars"/><div id="maxChars"></div> <br>
     <input type="text" validate="url" messageTo="url"/><div id="url"></div> <br>
@@ -17,8 +18,7 @@
 
     var validateMe = {
 
-
-
+         setDefaultMessage: false
     }
 
 </script>
